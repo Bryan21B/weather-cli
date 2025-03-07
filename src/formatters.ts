@@ -333,25 +333,35 @@ const getWeatherDescriptionFromCode = (
 ): string => {
   return WEATHER_CODES_SET.has(code)
     ? API_WEATHER_CODES[code as WeatherCode]
-    : "Unknown";
+    : "unknown";
 };
 
 const humanizeWeatherNow = (weather: Weather) => {
-  const weatherDescription: string =
-    getWeatherDescriptionFromCode(
-      weather.weatherCode
-    ).toLocaleLowerCase();
-  let humanWeather: string = `Right now in ${weather.cityName} the temperature is ${weather.temperature}°C. The weather could be described as ${weatherDescription}`;
+  let humanWeather: string = `Right now in ${weather.cityName} the temperature is ${weather.temperature}°C.`;
+
+  if (
+    getWeatherDescriptionFromCode(weather.weatherCode) !==
+    "unknown"
+  ) {
+    const weatherDescription =
+      getWeatherDescriptionFromCode(
+        weather.weatherCode
+      ).toLocaleLowerCase();
+    humanWeather += ` The weather could be described as ${weatherDescription}.`;
+  } else {
+    return;
+  }
+
   if (weather.date.getHours() >= 20) {
     humanWeather +=
-      " but you probably can't see it because it's night time. Have a good night!";
+      " You probably don't realise it because it's night time. Have a good night!";
   } else if (weather.date.getHours() >= 13) {
     humanWeather += ". Have a good afternoon!";
   } else if (weather.date.getHours() >= 6) {
     humanWeather += "Have a good morning!";
   } else {
     humanWeather +=
-      " but you probably can't see it because it's night time. Sleep tight!";
+      " You probably don't realise it because it's night time. Sleep tight!";
   }
   return humanWeather;
 };
