@@ -1,0 +1,4 @@
+- Add initial config prompting via Clack or Inquirer with "init" command and remove set city command
+- Let user specify city when running weather now
+- Add Ascii art corresponding to weather
+- Allow user to get forecast for a city
