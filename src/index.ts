@@ -2,6 +2,7 @@
 
 import { Command } from "commander";
 import { api } from "./api/api.js";
+import { formatters } from "./formatters.js";
 
 // Declare the program
 const program = new Command();
@@ -11,7 +12,8 @@ program
   .command("now")
   .description("Provide current local weather")
   .action(async () => {
-    console.log(await api.getWeatherNow("Paris"));
+    const weather = await api.getWeatherNow("Paris");
+    console.log(formatters.humanizeWeatherNow(weather));
   });
 
 // Run the program
