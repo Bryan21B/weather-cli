@@ -27,5 +27,8 @@
   },
   "scripts": {
     "commit": "cz"
+  },
+  "dependencies": {
+    "commander": "^13.1.0"
   }
 }
