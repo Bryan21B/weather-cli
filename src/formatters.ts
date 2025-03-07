@@ -5,7 +5,7 @@ interface Weather {
   date: Date;
 }
 
-const APIweatherCodes = {
+const API_WEATHER_CODES = {
   "0": "Unknown",
   "1000": "Clear, Sunny",
   "1100": "Mostly Clear",
@@ -30,9 +30,9 @@ const APIweatherCodes = {
   "7101": "Heavy Ice Pellets",
   "7102": "Light Ice Pellets",
   "8000": "Thunderstorm",
-};
+} as const;
 
-const APIweatherCodeFullDay = {
+/* const API_WEATHER_CODES_FULLDAY = {
   "0": "Unknown",
   "1000": "Clear, Sunny",
   "1100": "Mostly Clear",
@@ -127,9 +127,9 @@ const APIweatherCodeFullDay = {
   "8003": "Partly Cloudy and Thunderstorm",
   "8002": "Mostly Cloudy and Thunderstorm",
   "8000": "Thunderstorm",
-};
+}; */
 
-const APIweatherCodeDay = {
+/* const APIweatherCodeDay = {
   "0": "Unknown",
   "10000": "Clear, Sunny",
   "11000": "Mostly Clear",
@@ -224,9 +224,9 @@ const APIweatherCodeDay = {
   "80030": "Partly Cloudy and Thunderstorm",
   "80020": "Mostly Cloudy and Thunderstorm",
   "80000": "Thunderstorm",
-};
+}; */
 
-const APIweatherCodeNight = {
+/* const APIweatherCodeNight = {
   "0": "Unknown",
   "10001": "Clear",
   "11001": "Mostly Clear",
@@ -321,13 +321,26 @@ const APIweatherCodeNight = {
   "80031": "Partly Cloudy and Thunderstorm",
   "80021": "Mostly Cloudy and Thunderstorm",
   "80001": "Thunderstorm",
+}; */
+const WEATHER_CODES_SET = new Set(
+  Object.keys(API_WEATHER_CODES)
+);
+
+type WeatherCode = keyof typeof API_WEATHER_CODES;
+
+const getWeatherDescriptionFromCode = (
+  code: string
+): string => {
+  return WEATHER_CODES_SET.has(code)
+    ? API_WEATHER_CODES[code as WeatherCode]
+    : "Unknown";
 };
 
 const humanizeWeatherNow = (weather: Weather) => {
   const weatherDescription: string =
-    APIweatherCodes[
-      weather.weatherCode as keyof typeof APIweatherCodes
-    ].toLocaleLowerCase();
+    getWeatherDescriptionFromCode(
+      weather.weatherCode
+    ).toLocaleLowerCase();
   let humanWeather: string = `Right now in ${weather.cityName} the temperature is ${weather.temperature}°C. The weather could be described as ${weatherDescription}`;
   if (weather.date.getHours() >= 20) {
     humanWeather +=
