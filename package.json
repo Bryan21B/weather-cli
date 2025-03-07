@@ -11,6 +11,7 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@types/got": "^9.6.12",
     "@types/node": "^22.13.9",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.21.0",
@@ -31,6 +32,6 @@
   "dependencies": {
     "commander": "^13.1.0",
     "dotenv": "^16.4.7",
-    "got": "^14.4.6"
+    "ky": "^1.7.5"
   }
 }
