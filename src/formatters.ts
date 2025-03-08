@@ -1,8 +1,19 @@
+import { formatDistanceToNow } from "date-fns";
+
 interface Weather {
   temperature: number;
   weatherCode: string;
   cityName: string;
   date: Date;
+}
+
+interface DailyWeatherData {
+  [key: string]: {
+    temperatureAvg: number;
+    weatherCodeMin: number;
+    weatherCodeMax: number;
+    precipitationProbabilityAvg: number;
+  };
 }
 
 const API_WEATHER_CODES = {
@@ -366,6 +377,61 @@ const formatWeather = (weather: Weather) => {
   return formattedWeather;
 };
 
+const formatForecast = (
+  dailyForecast: DailyWeatherData
+) => {
+  // Get all dates from the forecast data and sort them chronologically
+  const dates = Object.keys(dailyForecast).sort();
+
+  return (
+    dates
+      .map((dateStr) => {
+        // Convert the ISO date string to a Date object
+        const date = new Date(dateStr);
+
+        // Get the forecast data for this date
+        // Type assertion needed because TypeScript doesn't know the string key exists
+        const forecast =
+          dailyForecast[
+            dateStr as keyof typeof dailyForecast
+          ];
+
+        // Format the time distance in natural language (e.g., "in 2 days")
+        // addSuffix: true adds "in" or "ago" to the output
+        const timeDistance = formatDistanceToNow(date, {
+          addSuffix: true,
+        });
+
+        // Skip dates in the past by checking if the formatted string contains "ago"
+        // This handles edge cases like "7 hours ago" on the same calendar day
+        if (timeDistance.includes("ago")) {
+          return null;
+        }
+
+        // Skip if no forecast data exists for this date
+        if (!forecast) return null;
+
+        // Convert the weather code to a description
+        const weatherDescription =
+          getWeatherDescriptionFromCode(
+            forecast.weatherCodeMax.toString()
+          ).toLocaleLowerCase();
+
+        // Format the forecast into a human-readable string
+        // Example: "- in 2 days the temperature will be 20°C and the weather code is 1000. The precipitation probability is 30%."
+        return (
+          `- ${timeDistance} the weather will be ${weatherDescription} with a temp of ${Math.round(forecast.temperatureAvg)}°C. ` +
+          `There's a ${Math.round(forecast.precipitationProbabilityAvg)}% chance of rain.`
+        );
+      })
+      // Remove null entries (past dates or missing forecasts)
+      .filter(Boolean)
+      // Join all forecast strings with newlines
+      .join("\n")
+  );
+};
+
 export const formatters = {
   formatWeather,
+  formatForecast,
 };

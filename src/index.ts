@@ -31,7 +31,7 @@ program
       return;
     }
     const weather = await api.getWeatherNow(city);
-    console.log(formatters.humanizeWeatherNow(weather));
+    console.log(formatters.formatWeather(weather));
   });
 
 program
@@ -46,7 +46,9 @@ program
       return;
     }
     const forecast = await api.getWeatherForecast(city);
-    console.log(JSON.stringify(forecast));
+    const formattedForecast =
+      formatters.formatForecast(forecast);
+    console.log(formattedForecast);
   });
 // Run the program
 program.parse(process.argv);

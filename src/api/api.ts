@@ -170,8 +170,7 @@ const getWeatherForecast = async (city: string) => {
   jsonResponse.timelines.daily.forEach((day) => {
     // Extract the date (YYYY-MM-DD) from the time string
     const date: Date = new Date(day.time);
-    const dateString: string =
-      date.toISOString().split("T")[0] ?? "";
+    const dateString: string = date.toISOString() ?? "";
 
     // Create an object with the desired properties for each day
     dailyData[dateString] = {
