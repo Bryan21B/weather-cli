@@ -37,8 +37,16 @@ program
 program
   .command("forecast")
   .description("Get weather forecast for your location")
-  .action(() => {
-    console.log("This is the weather forecast");
+  .action(async () => {
+    const city = config.get("city") as string;
+    if (!city) {
+      console.log(
+        "No city set. Use 'set-city' to configure one."
+      );
+      return;
+    }
+    const forecast = await api.getWeatherForecast(city);
+    console.log(JSON.stringify(forecast));
   });
 // Run the program
 program.parse(process.argv);
