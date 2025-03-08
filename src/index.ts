@@ -113,7 +113,7 @@ program
 // Add actions to the program
 program
   .command("now")
-  .description("Provide current local weather")
+  .description("Get current local weather")
   .action(async () => {
     try {
       const { city, units } = userChoices();
