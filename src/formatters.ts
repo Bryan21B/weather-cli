@@ -368,7 +368,7 @@ const formatWeather = (weather: Weather, units: string) => {
       getWeatherDescriptionFromCode(
         weather.weatherCode
       ).toLocaleLowerCase();
-    formattedWeather += ` The weather could be described as ${weatherDescription}`;
+    formattedWeather += ` The weather could be described as ${weatherDescription}.`;
   } else {
     return;
   }
