@@ -34,5 +34,11 @@ program
     console.log(formatters.humanizeWeatherNow(weather));
   });
 
+program
+  .command("forecast")
+  .description("Get weather forecast for your location")
+  .action(() => {
+    console.log("This is the weather forecast");
+  });
 // Run the program
 program.parse(process.argv);
