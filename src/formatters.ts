@@ -356,6 +356,12 @@ const formatUnits = (units: string) => {
   return new Error("Units not recognised");
 };
 
+/**
+ * Formats current weather data into a human-readable string
+ * @param weather - Object containing current weather data including temperature, weather code, city name and date
+ * @param units - The unit system to use ('metric' or 'imperial')
+ * @returns A formatted string describing the current weather conditions, or undefined if weather code is unknown
+ */
 const formatWeather = (weather: Weather, units: string) => {
   const formattedUnits = formatUnits(units);
   let formattedWeather: string = `Right now in ${weather.cityName} the temperature is ${Math.round(weather.temperature)}${formattedUnits}.`;
@@ -387,6 +393,13 @@ const formatWeather = (weather: Weather, units: string) => {
   return formattedWeather;
 };
 
+/**
+ * Formats daily weather forecast data into a human-readable string
+ * @param dailyForecast - Object containing forecast data for multiple days, keyed by date strings
+ * @returns A multi-line string with each line containing the forecast for a future date,
+ *          including temperature, weather description and precipitation probability.
+ *          Past dates are filtered out. Returns empty string if no future forecasts exist.
+ */
 const formatForecast = (
   dailyForecast: DailyWeatherData
 ) => {
