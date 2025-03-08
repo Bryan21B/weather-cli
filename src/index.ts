@@ -44,15 +44,17 @@ program
     }
 
     s.start("Checking if city is recognised");
-    const cityExists = await api.checkCityExistsOnAPI(city);
-    if (!cityExists) {
+    try {
+      const validatedCity =
+        await api.checkCityExistsOnAPI(city);
+      config.set("city", validatedCity);
+      s.stop("City is recognised!");
+    } catch (error: unknown) {
       cancel(
         `City "${city}" not found. Please check the spelling and try again.`
       );
       process.exit(1);
     }
-    s.stop("City is recognised!");
-    config.set("city", city);
 
     const unitSystem = await select({
       message: "Pick a unit system.",
@@ -78,15 +80,24 @@ program
   .command("now")
   .description("Provide current local weather")
   .action(async () => {
-    const city = config.get("city") as string;
-    if (!city) {
-      console.log(
-        "No city set. Use 'init' to configure one."
-      );
-      return;
+    try {
+      const city = config.get("city") as string;
+      const units = config.get("units") as string;
+      if (!city || !units) {
+        console.log(
+          "No city or unit system set. Use 'init' to configure one."
+        );
+        return;
+      }
+      const weather = await api.getWeatherNow(city, units);
+      console.log(formatters.formatWeather(weather, units));
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Error:", error.message);
+      } else {
+        console.error("An unknown error occurred");
+      }
     }
-    const weather = await api.getWeatherNow(city);
-    console.log(formatters.formatWeather(weather));
   });
 
 program
@@ -94,13 +105,17 @@ program
   .description("Get weather forecast for your location")
   .action(async () => {
     const city = config.get("city") as string;
-    if (!city) {
+    const units = config.get("units") as string;
+    if (!city || !units) {
       console.log(
-        "No city set. Use 'init' to configure one."
+        "No city or unit system set. Use 'init' to configure one."
       );
       return;
     }
-    const forecast = await api.getWeatherForecast(city);
+    const forecast = await api.getWeatherForecast(
+      city,
+      units
+    );
     const formattedForecast =
       formatters.formatForecast(forecast);
     console.log(formattedForecast);

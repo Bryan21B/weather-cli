@@ -5,7 +5,7 @@ dotenv.config();
 
 const baseUrl: string =
   "https://api.tomorrow.io/v4/weather/";
-const UNIT: string = "metric";
+
 const apiKey: string | undefined =
   process.env.WEATHER_API_KEY;
 const headers: Record<string, string> = {
@@ -124,11 +124,14 @@ interface DailyWeatherData {
 
 const dailyData: Record<string, DailyWeatherData> = {};
 
-const getWeatherNow = async (city: string) => {
+const getWeatherNow = async (
+  city: string,
+  units: string
+) => {
   const url: string = baseUrl + "realtime";
   const searchParams = new URLSearchParams({
     apikey: apiKey!,
-    units: UNIT,
+    units: units,
     location: city,
   });
   const jsonResponse = await ky
@@ -154,11 +157,14 @@ const getWeatherNow = async (city: string) => {
   };
 };
 
-const getWeatherForecast = async (city: string) => {
+const getWeatherForecast = async (
+  city: string,
+  units: string
+) => {
   const url: string = baseUrl + "forecast";
   const searchParams = new URLSearchParams({
     apikey: apiKey!,
-    units: UNIT,
+    units: units,
     location: city,
     timesteps: "1d",
   });
@@ -186,12 +192,12 @@ const getWeatherForecast = async (city: string) => {
 };
 
 const checkCityExistsOnAPI = async (
-  city
+  city: string
 ): Promise<boolean> => {
   const url: string = baseUrl + "realtime";
   const searchParams = new URLSearchParams({
     apikey: apiKey!,
-    units: UNIT,
+    units: "metric",
     location: city, // Using a default city to test
   });
 
@@ -201,8 +207,11 @@ const checkCityExistsOnAPI = async (
       headers,
     });
     return response.status === 200;
-  } catch (error) {
-    return false;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("Failed to check city");
   }
 };
 
