@@ -1,3 +1,5 @@
+import { formatDistanceToNow } from "date-fns";
+
 interface Weather {
   temperature: number;
   weatherCode: string;
@@ -5,7 +7,16 @@ interface Weather {
   date: Date;
 }
 
-const APIweatherCodes = {
+interface DailyWeatherData {
+  [key: string]: {
+    temperatureAvg: number;
+    weatherCodeMin: number;
+    weatherCodeMax: number;
+    precipitationProbabilityAvg: number;
+  };
+}
+
+const API_WEATHER_CODES = {
   "0": "Unknown",
   "1000": "Clear, Sunny",
   "1100": "Mostly Clear",
@@ -30,9 +41,9 @@ const APIweatherCodes = {
   "7101": "Heavy Ice Pellets",
   "7102": "Light Ice Pellets",
   "8000": "Thunderstorm",
-};
+} as const;
 
-const APIweatherCodeFullDay = {
+/* const API_WEATHER_CODES_FULLDAY = {
   "0": "Unknown",
   "1000": "Clear, Sunny",
   "1100": "Mostly Clear",
@@ -127,9 +138,9 @@ const APIweatherCodeFullDay = {
   "8003": "Partly Cloudy and Thunderstorm",
   "8002": "Mostly Cloudy and Thunderstorm",
   "8000": "Thunderstorm",
-};
+}; */
 
-const APIweatherCodeDay = {
+/* const APIweatherCodeDay = {
   "0": "Unknown",
   "10000": "Clear, Sunny",
   "11000": "Mostly Clear",
@@ -224,9 +235,9 @@ const APIweatherCodeDay = {
   "80030": "Partly Cloudy and Thunderstorm",
   "80020": "Mostly Cloudy and Thunderstorm",
   "80000": "Thunderstorm",
-};
+}; */
 
-const APIweatherCodeNight = {
+/* const APIweatherCodeNight = {
   "0": "Unknown",
   "10001": "Clear",
   "11001": "Mostly Clear",
@@ -321,28 +332,106 @@ const APIweatherCodeNight = {
   "80031": "Partly Cloudy and Thunderstorm",
   "80021": "Mostly Cloudy and Thunderstorm",
   "80001": "Thunderstorm",
+}; */
+const WEATHER_CODES_SET = new Set(
+  Object.keys(API_WEATHER_CODES)
+);
+
+type WeatherCode = keyof typeof API_WEATHER_CODES;
+
+const getWeatherDescriptionFromCode = (
+  code: string
+): string => {
+  return WEATHER_CODES_SET.has(code)
+    ? API_WEATHER_CODES[code as WeatherCode]
+    : "unknown";
 };
 
-const humanizeWeatherNow = (weather: Weather) => {
-  const weatherDescription: string =
-    APIweatherCodes[
-      weather.weatherCode as keyof typeof APIweatherCodes
-    ].toLocaleLowerCase();
-  let humanWeather: string = `Right now in ${weather.cityName} the temperature is ${weather.temperature}°C. The weather could be described as ${weatherDescription}`;
-  if (weather.date.getHours() >= 20) {
-    humanWeather +=
-      " but you probably can't see it because it's night time. Have a good night!";
-  } else if (weather.date.getHours() >= 13) {
-    humanWeather += ". Have a good afternoon!";
-  } else if (weather.date.getHours() >= 6) {
-    humanWeather += "Have a good morning!";
+const formatWeather = (weather: Weather) => {
+  let formattedWeather: string = `Right now in ${weather.cityName} the temperature is ${weather.temperature}°C.`;
+
+  if (
+    getWeatherDescriptionFromCode(weather.weatherCode) !==
+    "unknown"
+  ) {
+    const weatherDescription =
+      getWeatherDescriptionFromCode(
+        weather.weatherCode
+      ).toLocaleLowerCase();
+    formattedWeather += ` The weather could be described as ${weatherDescription}.`;
   } else {
-    humanWeather +=
-      " but you probably can't see it because it's night time. Sleep tight!";
+    return;
   }
-  return humanWeather;
+
+  if (weather.date.getHours() >= 20) {
+    formattedWeather +=
+      " You probably don't realise it because it's night time. Have a good night!";
+  } else if (weather.date.getHours() >= 13) {
+    formattedWeather += ". Have a good afternoon!";
+  } else if (weather.date.getHours() >= 6) {
+    formattedWeather += "Have a good morning!";
+  } else {
+    formattedWeather +=
+      " You probably don't realise it because it's night time. Sleep tight!";
+  }
+  return formattedWeather;
+};
+
+const formatForecast = (
+  dailyForecast: DailyWeatherData
+) => {
+  // Get all dates from the forecast data and sort them chronologically
+  const dates = Object.keys(dailyForecast).sort();
+
+  return (
+    dates
+      .map((dateStr) => {
+        // Convert the ISO date string to a Date object
+        const date = new Date(dateStr);
+
+        // Get the forecast data for this date
+        // Type assertion needed because TypeScript doesn't know the string key exists
+        const forecast =
+          dailyForecast[
+            dateStr as keyof typeof dailyForecast
+          ];
+
+        // Format the time distance in natural language (e.g., "in 2 days")
+        // addSuffix: true adds "in" or "ago" to the output
+        const timeDistance = formatDistanceToNow(date, {
+          addSuffix: true,
+        });
+
+        // Skip dates in the past by checking if the formatted string contains "ago"
+        // This handles edge cases like "7 hours ago" on the same calendar day
+        if (timeDistance.includes("ago")) {
+          return null;
+        }
+
+        // Skip if no forecast data exists for this date
+        if (!forecast) return null;
+
+        // Convert the weather code to a description
+        const weatherDescription =
+          getWeatherDescriptionFromCode(
+            forecast.weatherCodeMax.toString()
+          ).toLocaleLowerCase();
+
+        // Format the forecast into a human-readable string
+        // Example: "- in 2 days the temperature will be 20°C and the weather code is 1000. The precipitation probability is 30%."
+        return (
+          `- ${timeDistance} the weather will be ${weatherDescription} with a temp of ${Math.round(forecast.temperatureAvg)}°C. ` +
+          `There's a ${Math.round(forecast.precipitationProbabilityAvg)}% chance of rain.`
+        );
+      })
+      // Remove null entries (past dates or missing forecasts)
+      .filter(Boolean)
+      // Join all forecast strings with newlines
+      .join("\n")
+  );
 };
 
 export const formatters = {
-  humanizeWeatherNow,
+  formatWeather,
+  formatForecast,
 };

@@ -31,8 +31,24 @@ program
       return;
     }
     const weather = await api.getWeatherNow(city);
-    console.log(formatters.humanizeWeatherNow(weather));
+    console.log(formatters.formatWeather(weather));
   });
 
+program
+  .command("forecast")
+  .description("Get weather forecast for your location")
+  .action(async () => {
+    const city = config.get("city") as string;
+    if (!city) {
+      console.log(
+        "No city set. Use 'set-city' to configure one."
+      );
+      return;
+    }
+    const forecast = await api.getWeatherForecast(city);
+    const formattedForecast =
+      formatters.formatForecast(forecast);
+    console.log(formattedForecast);
+  });
 // Run the program
 program.parse(process.argv);
