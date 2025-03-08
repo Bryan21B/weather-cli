@@ -88,6 +88,7 @@ program
   .action(async () => {
     try {
       const city = config.get("city") as string;
+      console.debug(city);
       const units = config.get("units") as string;
       if (!city || !units) {
         console.log(

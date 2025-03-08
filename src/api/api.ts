@@ -193,20 +193,22 @@ const getWeatherForecast = async (
 
 const checkCityExistsOnAPI = async (
   city: string
-): Promise<boolean> => {
+): Promise<string> => {
   const url: string = baseUrl + "realtime";
   const searchParams = new URLSearchParams({
     apikey: apiKey!,
     units: "metric",
-    location: city, // Using a default city to test
+    location: city,
   });
 
   try {
-    const response = await ky.get(url, {
-      searchParams,
-      headers,
-    });
-    return response.status === 200;
+    const response = await ky
+      .get(url, {
+        searchParams,
+        headers,
+      })
+      .json<WeatherResponse>();
+    return response.location.name;
   } catch (error: unknown) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -214,9 +216,6 @@ const checkCityExistsOnAPI = async (
     throw new Error("Failed to check city");
   }
 };
-
-// Usage example:
-// const processedData = extractDailyWeatherData(apiResponse);
 
 export const api = {
   getWeatherNow,
