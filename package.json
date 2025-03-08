@@ -1,6 +1,6 @@
 {
   "name": "weather-cli",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "bin": {
     "weather": "./dist/index.js"
   },
@@ -11,16 +11,20 @@
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.21.0",
+    "@types/chalk": "^2.2.4",
     "@types/conf": "^3.0.3",
     "@types/date-fns": "^2.6.3",
     "@types/node": "^22.13.9",
+    "@vitest/coverage-c8": "^0.33.0",
+    "@vitest/coverage-v8": "3.0.8",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.1.1",
     "globals": "^16.0.0",
     "prettier": "3.5.3",
     "typescript": "^5.8.2",
-    "typescript-eslint": "^8.26.0"
+    "typescript-eslint": "^8.26.0",
+    "vitest": "^3.0.8"
   },
   "config": {
     "commitizen": {
@@ -28,10 +32,13 @@
     }
   },
   "scripts": {
-    "commit": "cz"
+    "commit": "cz",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@clack/prompts": "^0.10.0",
+    "chalk": "^5.4.1",
     "commander": "^13.1.0",
     "conf": "^13.1.0",
     "date-fns": "^4.1.0",
