@@ -115,6 +115,15 @@ interface ForecastResponse {
   location: Location;
 }
 
+interface DailyWeatherData {
+  temperatureAvg: number;
+  weatherCodeMin: number;
+  weatherCodeMax: number;
+  precipitationProbabilityAvg: number;
+}
+
+const dailyData: Record<string, DailyWeatherData> = {};
+
 const getWeatherNow = async (city: string) => {
   const url: string = baseUrl + "realtime";
   const searchParams = new URLSearchParams({
@@ -156,8 +165,29 @@ const getWeatherForecast = async (city: string) => {
   const jsonResponse = await ky
     .get(url, { searchParams, headers })
     .json<ForecastResponse>();
-  return jsonResponse;
+
+  // Loop through each day in the timelines.daily array
+  jsonResponse.timelines.daily.forEach((day) => {
+    // Extract the date (YYYY-MM-DD) from the time string
+    const date: Date = new Date(day.time);
+    const dateString: string =
+      date.toISOString().split("T")[0] ?? "";
+
+    // Create an object with the desired properties for each day
+    dailyData[dateString] = {
+      temperatureAvg: day.values.temperatureAvg,
+      weatherCodeMin: day.values.weatherCodeMin,
+      weatherCodeMax: day.values.weatherCodeMax,
+      precipitationProbabilityAvg:
+        day.values.precipitationProbabilityAvg,
+    };
+  });
+
+  return dailyData;
 };
+
+// Usage example:
+// const processedData = extractDailyWeatherData(apiResponse);
 
 export const api = {
   getWeatherNow,
