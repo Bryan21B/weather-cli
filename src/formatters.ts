@@ -1,3 +1,5 @@
+import { ascii } from "./weatherAscii.js";
+import chalk from "chalk";
 import { formatDistanceToNow } from "date-fns";
 
 interface Weather {
@@ -347,6 +349,52 @@ const getWeatherDescriptionFromCode = (
     : "unknown";
 };
 
+const generateASCIIArt = (
+  weatherCode: WeatherCode,
+  oneLiner: boolean
+) => {
+  // Rain and storm codes
+  if (
+    ["4000", "4001", "4200", "4201", "8000"].includes(
+      weatherCode
+    )
+  ) {
+    return oneLiner ? chalk.blue("🌧️ | | |") : ascii.rain;
+  }
+  // Snow and ice codes
+  else if (
+    [
+      "5000",
+      "5001",
+      "5100",
+      "5101",
+      "6000",
+      "6001",
+      "6200",
+      "6201",
+      "7000",
+      "7101",
+      "7102",
+    ].includes(weatherCode)
+  ) {
+    return oneLiner ? chalk.cyan("❄️ * * *") : ascii.snow;
+  }
+  // Cloudy and fog codes
+  else if (
+    ["1001", "1102", "2000", "2100"].includes(weatherCode)
+  ) {
+    return oneLiner ? chalk.gray("☁️ ☁️ ☁️") : ascii.cloudy;
+  }
+  // Clear/Sunny codes
+  else if (["1000"].includes(weatherCode)) {
+    return oneLiner ? chalk.yellow("☀️ ☀️ ☀️") : ascii.sun;
+  }
+  // Partly cloudy or other codes
+  return oneLiner
+    ? chalk.gray("☁️ ☀️ ☁️")
+    : ascii.sunBehindClouds;
+};
+
 const formatUnits = (units: string) => {
   if (units === "metric") {
     return "°C";
@@ -356,9 +404,22 @@ const formatUnits = (units: string) => {
   return new Error("Units not recognised");
 };
 
+/**
+ * Formats current weather data into a human-readable string
+ * @param weather - Object containing current weather data including temperature, weather code, city name and date
+ * @param units - The unit system to use ('metric' or 'imperial')
+ * @returns A formatted string describing the current weather conditions, or undefined if weather code is unknown
+ */
 const formatWeather = (weather: Weather, units: string) => {
+  const asciiArt = generateASCIIArt(
+    weather.weatherCode as WeatherCode,
+    false
+  );
   const formattedUnits = formatUnits(units);
-  let formattedWeather: string = `Right now in ${weather.cityName} the temperature is ${Math.round(weather.temperature)}${formattedUnits}.`;
+  let formattedWeather: string =
+    asciiArt +
+    "\n\n" +
+    `Right now in ${weather.cityName} the temperature is ${Math.round(weather.temperature)}${formattedUnits}.`;
 
   if (
     getWeatherDescriptionFromCode(weather.weatherCode) !==
@@ -387,6 +448,13 @@ const formatWeather = (weather: Weather, units: string) => {
   return formattedWeather;
 };
 
+/**
+ * Formats daily weather forecast data into a human-readable string
+ * @param dailyForecast - Object containing forecast data for multiple days, keyed by date strings
+ * @returns A multi-line string with each line containing the forecast for a future date,
+ *          including temperature, weather description and precipitation probability.
+ *          Past dates are filtered out. Returns empty string if no future forecasts exist.
+ */
 const formatForecast = (
   dailyForecast: DailyWeatherData
 ) => {
@@ -421,16 +489,21 @@ const formatForecast = (
         // Skip if no forecast data exists for this date
         if (!forecast) return null;
 
-        // Convert the weather code to a description
+        // Convert the weather code to a description and add ASCII art
         const weatherDescription =
           getWeatherDescriptionFromCode(
             forecast.weatherCodeMax.toString()
           ).toLocaleLowerCase();
 
+        const asciiArt = generateASCIIArt(
+          forecast.weatherCodeMin.toString() as WeatherCode,
+          true
+        );
+
         // Format the forecast into a human-readable string
         // Example: "- in 2 days the temperature will be 20°C and the weather code is 1000. The precipitation probability is 30%."
         return (
-          `- ${timeDistance} the weather will be ${weatherDescription} with a temp of ${Math.round(forecast.temperatureAvg)}°C. ` +
+          `${asciiArt}     ${timeDistance} the weather will be ${weatherDescription} with a temp of ${Math.round(forecast.temperatureAvg)}°C. ` +
           `There's a ${Math.round(forecast.precipitationProbabilityAvg)}% chance of rain.`
         );
       })

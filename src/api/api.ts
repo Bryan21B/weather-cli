@@ -1,3 +1,10 @@
+import {
+  DailyForecast,
+  DailyWeatherData,
+  ForecastResponse,
+  WeatherResponse,
+} from "../types/weather.js";
+
 import dotenv from "dotenv";
 import ky from "ky";
 
@@ -12,115 +19,6 @@ const headers: Record<string, string> = {
   accept: "application/json",
   "accept-encoding": "deflate, gzip, br",
 };
-
-interface Location {
-  lat: number;
-  lon: number;
-  name: string;
-  type: string;
-}
-
-interface WeatherValues {
-  cloudBase: number | null;
-  cloudCeiling: number | null;
-  cloudCover: number;
-  dewPoint: number;
-  freezingRainIntensity: number;
-  hailProbability: number;
-  hailSize: number;
-  humidity: number;
-  precipitationProbability: number;
-  pressureSeaLevel: number;
-  pressureSurfaceLevel: number;
-  rainIntensity: number;
-  sleetIntensity: number;
-  snowIntensity: number;
-  temperature: number;
-  temperatureApparent: number;
-  uvHealthConcern: number;
-  uvIndex: number;
-  visibility: number;
-  weatherCode: number;
-  windDirection: number;
-  windGust: number;
-  windSpeed: number;
-}
-
-interface WeatherData {
-  time: string;
-  values: WeatherValues;
-}
-
-interface WeatherResponse {
-  data: WeatherData;
-  location: Location;
-}
-
-interface DailyValues {
-  cloudBaseAvg: number;
-  cloudBaseMax: number;
-  cloudBaseMin: number;
-  cloudCeilingAvg: number;
-  cloudCeilingMax: number;
-  cloudCeilingMin: number;
-  cloudCoverAvg: number;
-  cloudCoverMax: number;
-  cloudCoverMin: number;
-  dewPointAvg: number;
-  dewPointMax: number;
-  dewPointMin: number;
-  humidity: number;
-  humidityMax: number;
-  humidityMin: number;
-  moonriseTime: string;
-  moonsetTime: string;
-  precipitationProbabilityAvg: number;
-  precipitationProbabilityMax: number;
-  precipitationProbabilityMin: number;
-  rainIntensityAvg: number;
-  rainIntensityMax: number;
-  rainIntensityMin: number;
-  sunriseTime: string;
-  sunsetTime: string;
-  temperatureAvg: number;
-  temperatureMax: number;
-  temperatureMin: number;
-  temperatureApparentAvg: number;
-  temperatureApparentMax: number;
-  temperatureApparentMin: number;
-  uvIndexAvg: number;
-  uvIndexMax: number;
-  uvIndexMin: number;
-  visibilityAvg: number;
-  weatherCodeMax: number;
-  weatherCodeMin: number;
-  windDirectionAvg: number;
-  windGustAvg: number;
-  windGustMax: number;
-  windGustMin: number;
-  windSpeedAvg: number;
-  windSpeedMax: number;
-  windSpeedMin: number;
-}
-
-interface DailyForecast {
-  time: string;
-  values: DailyValues;
-}
-
-interface ForecastResponse {
-  timelines: {
-    daily: DailyForecast[];
-  };
-  location: Location;
-}
-
-interface DailyWeatherData {
-  temperatureAvg: number;
-  weatherCodeMin: number;
-  weatherCodeMax: number;
-  precipitationProbabilityAvg: number;
-}
 
 const dailyData: Record<string, DailyWeatherData> = {};
 
@@ -173,20 +71,22 @@ const getWeatherForecast = async (
     .json<ForecastResponse>();
 
   // Loop through each day in the timelines.daily array
-  jsonResponse.timelines.daily.forEach((day) => {
-    // Extract the date (YYYY-MM-DD) from the time string
-    const date: Date = new Date(day.time);
-    const dateString: string = date.toISOString() ?? "";
+  jsonResponse.timelines.daily.forEach(
+    (day: DailyForecast) => {
+      // Extract the date (YYYY-MM-DD) from the time string
+      const date: Date = new Date(day.time);
+      const dateString: string = date.toISOString() ?? "";
 
-    // Create an object with the desired properties for each day
-    dailyData[dateString] = {
-      temperatureAvg: day.values.temperatureAvg,
-      weatherCodeMin: day.values.weatherCodeMin,
-      weatherCodeMax: day.values.weatherCodeMax,
-      precipitationProbabilityAvg:
-        day.values.precipitationProbabilityAvg,
-    };
-  });
+      // Create an object with the desired properties for each day
+      dailyData[dateString] = {
+        temperatureAvg: day.values.temperatureAvg,
+        weatherCodeMin: day.values.weatherCodeMin,
+        weatherCodeMax: day.values.weatherCodeMax,
+        precipitationProbabilityAvg:
+          day.values.precipitationProbabilityAvg,
+      };
+    }
+  );
 
   return dailyData;
 };

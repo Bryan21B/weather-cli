@@ -192,6 +192,13 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
+"@types/chalk@^2.2.4":
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/@types/chalk/-/chalk-2.2.4.tgz#32cd215134f191402f4909b250c28efa1f3a9c01"
+  integrity sha512-pb/QoGqtCpH2famSp72qEsXkNzcErlVmiXlQ/ww+5AddD8TmmYS7EWg5T20YiNCAiTgs8pMf2G8SJG5h/ER1ZQ==
+  dependencies:
+    chalk "*"
+
 "@types/conf@^3.0.3":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@types/conf/-/conf-3.0.3.tgz#c16ece8f4ff18eed24f2c066f377a62a5cce7b92"
@@ -451,6 +458,11 @@ callsites@^3.0.0:
   resolved "https://registry.npmjs.org/callsites/-/callsites-3.1.0.tgz"
   integrity sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==
 
+chalk@*, chalk@^5.3.0, chalk@^5.4.1:
+  version "5.4.1"
+  resolved "https://registry.yarnpkg.com/chalk/-/chalk-5.4.1.tgz#1b48bf0963ec158dce2aacf69c093ae2dd2092d8"
+  integrity sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w==
+
 chalk@^2.4.1:
   version "2.4.2"
   resolved "https://registry.npmjs.org/chalk/-/chalk-2.4.2.tgz"
@@ -467,11 +479,6 @@ chalk@^4.0.0, chalk@^4.1.0, chalk@^4.1.1:
   dependencies:
     ansi-styles "^4.1.0"
     supports-color "^7.1.0"
-
-chalk@^5.3.0:
-  version "5.4.1"
-  resolved "https://registry.npmjs.org/chalk/-/chalk-5.4.1.tgz"
-  integrity sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w==
 
 chardet@^0.7.0:
   version "0.7.0"
