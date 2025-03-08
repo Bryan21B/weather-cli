@@ -24,6 +24,7 @@ program
   .command("init")
   .description("Set up your city and unit system")
   .action(async () => {
+    config.clear();
     const s = spinner();
     intro(`weather-cli`);
 
