@@ -336,8 +336,8 @@ const getWeatherDescriptionFromCode = (
     : "unknown";
 };
 
-const humanizeWeatherNow = (weather: Weather) => {
-  let humanWeather: string = `Right now in ${weather.cityName} the temperature is ${weather.temperature}°C.`;
+const formatWeather = (weather: Weather) => {
+  let formattedWeather: string = `Right now in ${weather.cityName} the temperature is ${weather.temperature}°C.`;
 
   if (
     getWeatherDescriptionFromCode(weather.weatherCode) !==
@@ -347,25 +347,25 @@ const humanizeWeatherNow = (weather: Weather) => {
       getWeatherDescriptionFromCode(
         weather.weatherCode
       ).toLocaleLowerCase();
-    humanWeather += ` The weather could be described as ${weatherDescription}.`;
+    formattedWeather += ` The weather could be described as ${weatherDescription}.`;
   } else {
     return;
   }
 
   if (weather.date.getHours() >= 20) {
-    humanWeather +=
+    formattedWeather +=
       " You probably don't realise it because it's night time. Have a good night!";
   } else if (weather.date.getHours() >= 13) {
-    humanWeather += ". Have a good afternoon!";
+    formattedWeather += ". Have a good afternoon!";
   } else if (weather.date.getHours() >= 6) {
-    humanWeather += "Have a good morning!";
+    formattedWeather += "Have a good morning!";
   } else {
-    humanWeather +=
+    formattedWeather +=
       " You probably don't realise it because it's night time. Sleep tight!";
   }
-  return humanWeather;
+  return formattedWeather;
 };
 
 export const formatters = {
-  humanizeWeatherNow,
+  formatWeather,
 };
