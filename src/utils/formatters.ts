@@ -1,4 +1,4 @@
-import { ascii } from "./weatherAscii.js";
+import { ascii } from "./ascii-art.js";
 import chalk from "chalk";
 import { formatDistanceToNow } from "date-fns";
 
