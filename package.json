@@ -1,6 +1,6 @@
 {
   "name": "weather-cli",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "bin": {
     "weather": "./dist/index.js"
   },
