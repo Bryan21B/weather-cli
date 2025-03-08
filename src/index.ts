@@ -20,6 +20,35 @@ const config = new Conf({ projectName: "weather-cli" });
 // Declare the program
 const program = new Command();
 
+const userChoices = (): { city: string; units: string } => {
+  const city =
+    program.opts().city || (config.get("city") as string);
+  const units =
+    program.opts().units || (config.get("units") as string);
+
+  if (!city && !units) {
+    console.log(
+      "No city and units selected. Please set them via 'weather init' or by using options. See --help for more information"
+    );
+    process.exit(1);
+  }
+
+  if (!city) {
+    console.log(
+      "No city selected. Please set it via 'weather init' or by using --city option. See --help for more information"
+    );
+    process.exit(1);
+  }
+
+  if (!units) {
+    console.log(
+      "No units selected. Please set them via 'weather init' or by using --units option. See --help for more information"
+    );
+    process.exit(1);
+  }
+  return { city, units };
+};
+
 program
   .command("init")
   .description("Set up your city and unit system")
@@ -87,15 +116,7 @@ program
   .description("Provide current local weather")
   .action(async () => {
     try {
-      const city = config.get("city") as string;
-      console.debug(city);
-      const units = config.get("units") as string;
-      if (!city || !units) {
-        console.log(
-          "No city or unit system set. Use 'init' to configure one."
-        );
-        return;
-      }
+      const { city, units } = userChoices();
       const weather = await api.getWeatherNow(city, units);
       console.log(formatters.formatWeather(weather, units));
     } catch (error: unknown) {
@@ -111,14 +132,7 @@ program
   .command("forecast")
   .description("Get weather forecast for your location")
   .action(async () => {
-    const city = config.get("city") as string;
-    const units = config.get("units") as string;
-    if (!city || !units) {
-      console.log(
-        "No city or unit system set. Use 'init' to configure one."
-      );
-      return;
-    }
+    const { city, units } = userChoices();
     const forecast = await api.getWeatherForecast(
       city,
       units
@@ -127,5 +141,14 @@ program
       formatters.formatForecast(forecast);
     console.log(formattedForecast);
   });
+
+// Handle options
+program
+  .option("-c, --city <city-name>", "override default city")
+  .option(
+    "-u, --units <unit type>",
+    "override default units, metric or imperial"
+  );
+
 // Run the program
 program.parse(process.argv);
