@@ -401,7 +401,7 @@ const formatUnits = (units: string) => {
   } else if (units === "imperial") {
     return "°F";
   }
-  return new Error("Units not recognised");
+  throw new Error("Units not recognised");
 };
 
 /**
@@ -518,4 +518,6 @@ export const formatters = {
   formatWeather,
   formatForecast,
   formatUnits,
+  getWeatherDescriptionFromCode,
+  generateASCIIArt,
 };
