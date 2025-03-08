@@ -79,7 +79,7 @@ program
         await api.checkCityExistsOnAPI(city);
       config.set("city", validatedCity);
       s.stop("City is recognised!");
-    } catch (error: unknown) {
+    } catch {
       cancel(
         `City "${city}" not found. Please check the spelling and try again.`
       );
