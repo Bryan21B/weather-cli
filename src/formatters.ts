@@ -1,3 +1,4 @@
+import { ascii } from "./weatherAscii.js";
 import { formatDistanceToNow } from "date-fns";
 
 interface Weather {
@@ -347,6 +348,47 @@ const getWeatherDescriptionFromCode = (
     : "unknown";
 };
 
+const generateASCIIArt = (weatherCode: WeatherCode) => {
+  // Rain and storm codes
+  if (
+    ["4000", "4001", "4200", "4201", "8000"].includes(
+      weatherCode
+    )
+  ) {
+    return ascii.rain;
+  }
+  // Snow and ice codes
+  else if (
+    [
+      "5000",
+      "5001",
+      "5100",
+      "5101",
+      "6000",
+      "6001",
+      "6200",
+      "6201",
+      "7000",
+      "7101",
+      "7102",
+    ].includes(weatherCode)
+  ) {
+    return ascii.snow;
+  }
+  // Cloudy and fog codes
+  else if (
+    ["1001", "1102", "2000", "2100"].includes(weatherCode)
+  ) {
+    return ascii.cloudy;
+  }
+  // Clear/Sunny codes
+  else if (["1000"].includes(weatherCode)) {
+    return ascii.sun;
+  }
+  // Partly cloudy or other codes
+  return ascii.sunBehindClouds;
+};
+
 const formatUnits = (units: string) => {
   if (units === "metric") {
     return "°C";
@@ -363,8 +405,14 @@ const formatUnits = (units: string) => {
  * @returns A formatted string describing the current weather conditions, or undefined if weather code is unknown
  */
 const formatWeather = (weather: Weather, units: string) => {
+  const asciiArt = generateASCIIArt(
+    weather.weatherCode as WeatherCode
+  );
   const formattedUnits = formatUnits(units);
-  let formattedWeather: string = `Right now in ${weather.cityName} the temperature is ${Math.round(weather.temperature)}${formattedUnits}.`;
+  let formattedWeather: string =
+    asciiArt +
+    "\n\n" +
+    `Right now in ${weather.cityName} the temperature is ${Math.round(weather.temperature)}${formattedUnits}.`;
 
   if (
     getWeatherDescriptionFromCode(weather.weatherCode) !==
