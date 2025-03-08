@@ -69,6 +69,11 @@ program
       ],
     });
 
+    if (isCancel(unitSystem)) {
+      cancel("Operation cancelled.");
+      process.exit(0);
+    }
+
     config.set("units", unitSystem);
 
     outro(
