@@ -9,12 +9,12 @@ const sun = `
 `;
 
 const sunBehindClouds = `
-       \\  |  /   
-     ${chalk.yellow(" .-' ☀ '-. ")}  
-    ${chalk.yellow("/   '---'   \\")}
-   ${chalk.gray("(     .--.     )")}  
-  ${chalk.gray("(_   (    )   _)")}  
-     ${chalk.gray("'--'    '--'")}  
+      ${chalk.yellow("\\  |  /")}
+    ${chalk.yellow(".-' ☀ '-.")}
+   ${chalk.yellow("'--.___.--'")}
+   ${chalk.gray("(    .-.    )")}
+  ${chalk.gray("(_  (   )  _)")}
+    ${chalk.gray("'--' '--'")}
 `;
 
 const snow = `

@@ -1,4 +1,5 @@
 import { ascii } from "./weatherAscii.js";
+import chalk from "chalk";
 import { formatDistanceToNow } from "date-fns";
 
 interface Weather {
@@ -348,14 +349,17 @@ const getWeatherDescriptionFromCode = (
     : "unknown";
 };
 
-const generateASCIIArt = (weatherCode: WeatherCode) => {
+const generateASCIIArt = (
+  weatherCode: WeatherCode,
+  oneLiner: boolean
+) => {
   // Rain and storm codes
   if (
     ["4000", "4001", "4200", "4201", "8000"].includes(
       weatherCode
     )
   ) {
-    return ascii.rain;
+    return oneLiner ? chalk.blue("🌧️ | | |") : ascii.rain;
   }
   // Snow and ice codes
   else if (
@@ -373,20 +377,22 @@ const generateASCIIArt = (weatherCode: WeatherCode) => {
       "7102",
     ].includes(weatherCode)
   ) {
-    return ascii.snow;
+    return oneLiner ? chalk.cyan("❄️ * * *") : ascii.snow;
   }
   // Cloudy and fog codes
   else if (
     ["1001", "1102", "2000", "2100"].includes(weatherCode)
   ) {
-    return ascii.cloudy;
+    return oneLiner ? chalk.gray("☁️ ☁️ ☁️") : ascii.cloudy;
   }
   // Clear/Sunny codes
   else if (["1000"].includes(weatherCode)) {
-    return ascii.sun;
+    return oneLiner ? chalk.yellow("☀️ ☀️ ☀️") : ascii.sun;
   }
   // Partly cloudy or other codes
-  return ascii.sunBehindClouds;
+  return oneLiner
+    ? chalk.gray("☁️ ☀️ ☁️")
+    : ascii.sunBehindClouds;
 };
 
 const formatUnits = (units: string) => {
@@ -406,7 +412,8 @@ const formatUnits = (units: string) => {
  */
 const formatWeather = (weather: Weather, units: string) => {
   const asciiArt = generateASCIIArt(
-    weather.weatherCode as WeatherCode
+    weather.weatherCode as WeatherCode,
+    false
   );
   const formattedUnits = formatUnits(units);
   let formattedWeather: string =
@@ -482,16 +489,21 @@ const formatForecast = (
         // Skip if no forecast data exists for this date
         if (!forecast) return null;
 
-        // Convert the weather code to a description
+        // Convert the weather code to a description and add ASCII art
         const weatherDescription =
           getWeatherDescriptionFromCode(
             forecast.weatherCodeMax.toString()
           ).toLocaleLowerCase();
 
+        const asciiArt = generateASCIIArt(
+          forecast.weatherCodeMin.toString() as WeatherCode,
+          true
+        );
+
         // Format the forecast into a human-readable string
         // Example: "- in 2 days the temperature will be 20°C and the weather code is 1000. The precipitation probability is 30%."
         return (
-          `- ${timeDistance} the weather will be ${weatherDescription} with a temp of ${Math.round(forecast.temperatureAvg)}°C. ` +
+          `${asciiArt}     ${timeDistance} the weather will be ${weatherDescription} with a temp of ${Math.round(forecast.temperatureAvg)}°C. ` +
           `There's a ${Math.round(forecast.precipitationProbabilityAvg)}% chance of rain.`
         );
       })
