@@ -117,23 +117,25 @@ interface ForecastResponse {
 
 const getWeatherNow = async (city: string) => {
   const url: string = baseUrl + "realtime";
-  const JsonResponse = await ky
+  const searchParams = new URLSearchParams({
+    apikey: apiKey!,
+    units: UNIT,
+    location: city,
+  });
+  const jsonResponse = await ky
     .get(url, {
-      searchParams: new URLSearchParams({
-        apikey: apiKey!,
-        units: UNIT,
-        location: city,
-      }),
+      searchParams,
+      headers,
     })
     .json<WeatherResponse>();
   const temperature: number =
-    JsonResponse.data.values.temperature;
+    jsonResponse.data.values.temperature;
   const weatherCode: string =
-    JsonResponse.data.values.weatherCode.toString();
+    jsonResponse.data.values.weatherCode.toString();
   const cityName: string =
-    JsonResponse.location.name?.split(",")[0] ??
+    jsonResponse.location.name?.split(",")[0] ??
     "your city";
-  const date: Date = new Date(JsonResponse.data.time);
+  const date: Date = new Date(jsonResponse.data.time);
 
   return {
     temperature,
