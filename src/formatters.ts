@@ -358,7 +358,7 @@ const formatUnits = (units: string) => {
 
 const formatWeather = (weather: Weather, units: string) => {
   const formattedUnits = formatUnits(units);
-  let formattedWeather: string = `Right now in ${weather.cityName} the temperature is ${weather.temperature}${formattedUnits}.`;
+  let formattedWeather: string = `Right now in ${weather.cityName} the temperature is ${Math.round(weather.temperature)}${formattedUnits}.`;
 
   if (
     getWeatherDescriptionFromCode(weather.weatherCode) !==
