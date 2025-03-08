@@ -5,6 +5,7 @@ import {
   intro,
   isCancel,
   outro,
+  select,
   spinner,
   text,
 } from "@clack/prompts";
@@ -18,47 +19,59 @@ const config = new Conf({ projectName: "weather-cli" });
 
 // Declare the program
 const program = new Command();
-console.debug("Let's check if a city is set");
-const currentCity = config.get("city");
-console.debug("City value:", currentCity);
-console.debug("City type:", typeof currentCity);
 
-if (!config.get("city")) {
-  const s = spinner();
-  intro(`weather-cli`);
+program
+  .command("init")
+  .description("Set up your city and unit system")
+  .action(async () => {
+    const s = spinner();
+    intro(`weather-cli`);
 
-  const city = await text({
-    message: "What's the name of your city?",
-    placeholder: "Enter your city",
-    initialValue: "",
-    validate(value) {
-      if (value.length === 0) {
-        return `Please enter a city name!`;
-      }
-    },
-  });
+    const city = await text({
+      message: "What's the name of your city?",
+      placeholder: "Enter your city",
+      initialValue: "",
+      validate(value) {
+        if (value.length === 0) {
+          return `Please enter a city name!`;
+        }
+      },
+    });
 
-  if (isCancel(city)) {
-    cancel("Operation cancelled.");
-    process.exit(0);
-  }
+    if (isCancel(city)) {
+      cancel("Operation cancelled.");
+      process.exit(0);
+    }
 
-  s.start("Checking if city is recognised");
-  const cityExists = await api.checkCityExistsOnAPI(city);
-  if (!cityExists) {
-    cancel(
-      `City "${city}" not found. Please check the spelling and try again.`
+    s.start("Checking if city is recognised");
+    const cityExists = await api.checkCityExistsOnAPI(city);
+    if (!cityExists) {
+      cancel(
+        `City "${city}" not found. Please check the spelling and try again.`
+      );
+      process.exit(1);
+    }
+    s.stop("City is recognised!");
+    config.set("city", city);
+
+    const unitSystem = await select({
+      message: "Pick a unit system.",
+      options: [
+        {
+          value: "metric",
+          label: "°C",
+          hint: "The best choice",
+        },
+        { value: "imperial", label: "°F" },
+      ],
+    });
+
+    config.set("units", unitSystem);
+
+    outro(
+      `You're all set! You can now run weather --help for a list of commands`
     );
-    process.exit(1);
-  }
-  s.stop("City is recognised!");
-
-  config.set("city", city);
-
-  outro(
-    `You're all set! You can now run weather --help for a list of commands`
-  );
-}
+  });
 
 // Add actions to the program
 program
@@ -68,7 +81,7 @@ program
     const city = config.get("city") as string;
     if (!city) {
       console.log(
-        "No city set. Use 'set-city' to configure one."
+        "No city set. Use 'init' to configure one."
       );
       return;
     }
@@ -83,7 +96,7 @@ program
     const city = config.get("city") as string;
     if (!city) {
       console.log(
-        "No city set. Use 'set-city' to configure one."
+        "No city set. Use 'init' to configure one."
       );
       return;
     }
