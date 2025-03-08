@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 
 import chalk from "chalk";
-import { formatters } from "../src/formatters.js";
+import { formatters } from "../src/utils/formatters.js";
 
 describe("The getWeatherDescriptionFromCode() method", () => {
   test("returns Partly Cloudy for code 1101", () => {
