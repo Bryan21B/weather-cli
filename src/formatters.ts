@@ -347,8 +347,18 @@ const getWeatherDescriptionFromCode = (
     : "unknown";
 };
 
-const formatWeather = (weather: Weather) => {
-  let formattedWeather: string = `Right now in ${weather.cityName} the temperature is ${weather.temperature}°C.`;
+const formatUnits = (units: string) => {
+  if (units === "metric") {
+    return "°C";
+  } else if (units === "imperial") {
+    return "°F";
+  }
+  return new Error("Units not recognised");
+};
+
+const formatWeather = (weather: Weather, units: string) => {
+  const formattedUnits = formatUnits(units);
+  let formattedWeather: string = `Right now in ${weather.cityName} the temperature is ${weather.temperature}${formattedUnits}.`;
 
   if (
     getWeatherDescriptionFromCode(weather.weatherCode) !==
@@ -358,7 +368,7 @@ const formatWeather = (weather: Weather) => {
       getWeatherDescriptionFromCode(
         weather.weatherCode
       ).toLocaleLowerCase();
-    formattedWeather += ` The weather could be described as ${weatherDescription}.`;
+    formattedWeather += ` The weather could be described as ${weatherDescription}`;
   } else {
     return;
   }
@@ -367,7 +377,7 @@ const formatWeather = (weather: Weather) => {
     formattedWeather +=
       " You probably don't realise it because it's night time. Have a good night!";
   } else if (weather.date.getHours() >= 13) {
-    formattedWeather += ". Have a good afternoon!";
+    formattedWeather += " Have a good afternoon!";
   } else if (weather.date.getHours() >= 6) {
     formattedWeather += "Have a good morning!";
   } else {
@@ -434,4 +444,5 @@ const formatForecast = (
 export const formatters = {
   formatWeather,
   formatForecast,
+  formatUnits,
 };

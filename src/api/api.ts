@@ -5,7 +5,7 @@ dotenv.config();
 
 const baseUrl: string =
   "https://api.tomorrow.io/v4/weather/";
-const UNIT: string = "metric";
+
 const apiKey: string | undefined =
   process.env.WEATHER_API_KEY;
 const headers: Record<string, string> = {
@@ -124,11 +124,14 @@ interface DailyWeatherData {
 
 const dailyData: Record<string, DailyWeatherData> = {};
 
-const getWeatherNow = async (city: string) => {
+const getWeatherNow = async (
+  city: string,
+  units: string
+) => {
   const url: string = baseUrl + "realtime";
   const searchParams = new URLSearchParams({
     apikey: apiKey!,
-    units: UNIT,
+    units: units,
     location: city,
   });
   const jsonResponse = await ky
@@ -154,11 +157,14 @@ const getWeatherNow = async (city: string) => {
   };
 };
 
-const getWeatherForecast = async (city: string) => {
+const getWeatherForecast = async (
+  city: string,
+  units: string
+) => {
   const url: string = baseUrl + "forecast";
   const searchParams = new URLSearchParams({
     apikey: apiKey!,
-    units: UNIT,
+    units: units,
     location: city,
     timesteps: "1d",
   });
@@ -185,11 +191,35 @@ const getWeatherForecast = async (city: string) => {
   return dailyData;
 };
 
-// Usage example:
-// const processedData = extractDailyWeatherData(apiResponse);
+const checkCityExistsOnAPI = async (
+  city: string
+): Promise<string> => {
+  const url: string = baseUrl + "realtime";
+  const searchParams = new URLSearchParams({
+    apikey: apiKey!,
+    units: "metric",
+    location: city,
+  });
+
+  try {
+    const response = await ky
+      .get(url, {
+        searchParams,
+        headers,
+      })
+      .json<WeatherResponse>();
+    return response.location.name;
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error("Failed to check city");
+  }
+};
 
 export const api = {
   getWeatherNow,
   getWeatherForecast,
+  checkCityExistsOnAPI,
   // Add other functions here
 };
