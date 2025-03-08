@@ -1,0 +1,3 @@
+- Add Ascii art corresponding to weather
+- Allow user to set his API code
+- Handle 429 error code when too many requests

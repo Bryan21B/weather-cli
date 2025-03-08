@@ -1,0 +1,42 @@
+{
+  "name": "weather-cli",
+  "version": "0.0.1",
+  "bin": {
+    "weather": "./dist/index.js"
+  },
+  "description": "A simple CLI weather app",
+  "main": "index.js",
+  "repository": "https://github.com/Bryan21B/weather-cli.git",
+  "author": "Bryan Blanchot <Bryan21B@users.noreply.github.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@types/conf": "^3.0.3",
+    "@types/date-fns": "^2.6.3",
+    "@types/node": "^22.13.9",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.1.1",
+    "globals": "^16.0.0",
+    "prettier": "3.5.3",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.26.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "scripts": {
+    "commit": "cz"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.10.0",
+    "commander": "^13.1.0",
+    "conf": "^13.1.0",
+    "date-fns": "^4.1.0",
+    "dotenv": "^16.4.7",
+    "ky": "^1.7.5"
+  },
+  "type": "module"
+}
